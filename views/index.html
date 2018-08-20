@@ -1,0 +1,52 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+
+    <title>Leipomon jono</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/style.css">   
+    <script src="/client.js" defer></script>
+
+  </head>
+  <body>
+    <h2>
+    Leipomon työtehtävät.
+    </h2>
+    <p id= "adder">
+    <b>Lisää uusi työnumero listaan:</b> <br>
+    Työnumero:
+    <input type="text" id="workNumber" size="10"><br>
+    Jonoon numerolla: 
+    <input type="text" id="queueNumber" maxlength="10" size="10"><br>
+    <input id= "choise1" name= "intro" type= "radio" value= "sahaus"><label for= "choise1">sahaus</label>
+    <input id= "choise2" name= "intro" type= "radio" value= "muokkaus"><label for = "choise2">muokkaus</label>
+    <input id= "choise3" name= "intro" type= "radio" value= "sahaus ja muokkaus"><label for= "choise3">sahaus ja muokkaus</label>
+    <br>
+    Kuka lisäsi:
+    <input id= "sender" type= "text" size= "10"><br>
+    Lisätietoja:
+    <input id= "extraNotes" type= "text" size= "30"><br>
+    <input type= "button" value="Lähetä" id= "sendNew" class= "buttonz">
+    </p>
+    <p id= "remover">
+    Poista sahaus/muokkauslistasta työ, jonka jonotusnumero on: <br>
+    <input id= "deleterChoose" name= "deleterChoose" type= "radio" value= "sahaus"><label for= "deleterChoose">sahaus</label>
+    <input id= "deleterChoose2" name= "deleterChoose" type= "radio" value= "muokkaus"><label for= "deleterChoose2">muokkaus</label>
+    <input type= "text" id= "deleterNumber" size= "3">
+    <input type= "button" id= "deleterButton" value= "Poista" class= "buttonz">
+    </p>
+      <div id= "infot">
+        <div id= "info1">Sahalle: </div>
+        <div id= "info2">Muokkaukseen:</div>
+      </div>
+    <div id= "jonot">  
+      <p id= "sahaQueue"></p>
+      <p id= "muokkausQueue"></p>  
+    </div>
+    
+    
+  </body>
+</html>
