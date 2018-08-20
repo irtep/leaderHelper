@@ -1,13 +1,24 @@
-// event listener for sender button
+// event listeners 
 const liztenerAdd = document.getElementById("sendNew").addEventListener("click", addNew);
 const liztenerDelete = document.getElementById("deleterButton").addEventListener("click", deleteEntry);
+// nicks
 const sahaQue = document.getElementById('sahaQueue');
 const muokkausQue = document.getElementById('muokkausQueue');
+// arrays for lists
 const sahaList = [];
 const muokkausList = [];
-let oldListSaha; // here comes the old lists from dataBase
+// here comes the old lists from dataBase
+let oldListSaha; 
 let oldListMuokkaus;
 
+// screen refresher
+function refresher(list1, list2) {
+  // add to elements
+  sahaQue.innerHTML = list1;
+  muokkausQue.innerHTML = list2;
+}
+
+// entry deleter function
 function deleteEntry() {
   const deleterN = document.getElementById('deleterNumber');
   let selectedList;
@@ -19,6 +30,7 @@ function deleteEntry() {
       console.log("is empty");
     } else {
       console.log("number");
+      // if sahaList chosen:
       if (document.getElementById('deleterChoose').checked) {
         selectedList = 'sahaus';    
         for (let xx = 0; xx < sahaList.length; xx++){
@@ -35,30 +47,44 @@ function deleteEntry() {
           // deleterNumber.value
           console.log("newNumber, numberToDelete", newNumber, deleterN.value);
           if (newNumber == deleterN.value) {
-            console.log("same value ok");    
+            console.log("same value, deleting");    
             sahaList.splice(xx, 1);
+            const forShow1 = sahaList.join('<br>');
+            const forShow2 = muokkausList.join('<br>');
+            refresher(forShow1, forShow2);
           }
         }
       }
+      // if muokkausList chosen:
       if (document.getElementById('deleterChoose2').checked) {
-        selectedList = 'muokkaus';    
-      }
-      // delete action here
-      /*
-      for (let xx = 0; xx < sahaList.length; xx++){
-        console.log("checking sahaList: ", sahaList[xx][0]);
-        let newNumber = parseInt(sahaList[xx][0]);
-        console.log("original array: ", sahaList[xx]);
-        let newArray = sahaList[xx].substring(1);
-        console.log("newNumber: ", newNumber, "newArray: ", newArray);
-        newArray = newNumber + newArray;
-        console.log("newArray now: ", newArray);
-      }
-      */      
+        selectedList = 'muokkaus'; 
+          for (let xx = 0; xx < muokkausList.length; xx++){
+          // if 0-9
+          if (parseInt(muokkausList[xx][1]) === NaN){
+            newNumber = parseInt(muokkausList[xx][0]);
+          } else { 
+            // if 10-99
+            newNumber = parseInt(muokkausList[xx][0] + muokkausList[xx][1]);
+          }
+          
+          let newArray = muokkausList[xx].substring(1);
+          newArray = newNumber + newArray;
+          // deleterNumber.value
+          console.log("newNumber, numberToDelete", newNumber, deleterN.value);
+          if (newNumber == deleterN.value) {
+            console.log("same value, deleting");    
+            muokkausList.splice(xx, 1);
+            const forShow1 = sahaList.join('<br>');
+            const forShow2 = muokkausList.join('<br>');
+            refresher(sahaList, muokkausList);
+          }
+        }        
+      } // muokkauslist delete ends
     }
   }  
 }
 
+// add new job function
 function addNew() {
   console.log('addNew fired');
   const newWork = {number: null, queue: null, jobs: null, whoAdded: null, extraNotes: null};
@@ -110,25 +136,13 @@ function addNew() {
   
     // if newWork.number overlaps with any number in oldList, modificate oldList to make space
     // can use this for that:
-    /*
-    for (let xx = 0; xx < sahaList.length; xx++){
-      console.log("checking sahaList: ", sahaList[xx][0]);
-      let newNumber = parseInt(sahaList[xx][0]);
-      newNumber++;
-      console.log("original array: ", sahaList[xx]);
-      let newArray = sahaList[xx].substring(1);
-      console.log("newNumber: ", newNumber, "newArray: ", newArray);
-      newArray = newNumber + newArray;
-      console.log("newArray now: ", newArray);
-    }
-    */
+
     const forShow1 = sahaList.join('<br>');
     const forShow2 = muokkausList.join('<br>');
     // add to elements
-    sahaQue.innerHTML = forShow1;
-    muokkausQue.innerHTML = forShow2;
-    console.log('lists: ', sahaList, muokkausList);
-    
+    refresher(forShow1, forShow2);
+    //sahaQue.innerHTML = forShow1;
+    //muokkausQue.innerHTML = forShow2;
     // clear values from form
     document.getElementById('workNumber').value = '';
     document.getElementById('queueNumber').value = '';
@@ -145,6 +159,9 @@ function addNew() {
 } // add new action ends
 
 // Onload:
+window.onload = ()=> {
+  console.log("onload!");
+};
 /*
 Ajax to get current work list and add it to workQue.innerHTML
 and also to oldListSaha and OldListMuokkaus
