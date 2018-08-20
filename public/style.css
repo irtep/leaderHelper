@@ -1,0 +1,49 @@
+* {
+ margin: 5px;
+ padding: 5px;
+}
+#adder {
+  background-color: lightBlue;
+  width: 450px;
+  height: 250px;
+  margin: 5px;
+  padding: 5px;
+}
+#remover {
+  background-color: pink;
+  width: 450px;
+  margin: 5px;
+  padding: 5px;
+} 
+#deleterButton {
+  background-color: crimson;
+  color: white;
+}
+.deleters {
+ background-color: crimson;
+ color: white;
+}
+.orders {
+  color: navy;
+}
+#jonot {
+  display: flex;
+}
+#sahaQueue {
+  width: 50%;
+  background-color: rgb(73, 225, 242);
+}
+#muokkausQueue {
+  flex: 1;
+  background-color: rgb(73,250,150);
+}
+#infot {
+  display: flex;
+  font-size: 16px;
+}
+#info1 {
+  width: 50%;
+}
+#info2 {
+  flex: 1;
+}
