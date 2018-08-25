@@ -30,9 +30,10 @@
     Lisätietoja:
     <input id= "extraNotes" type= "text" size= "30"><br>
     <input type= "button" value="Lähetä" id= "sendNew" class= "buttonz">
+    <p id= "errorMessage"></p>
     </p>
     <p id= "remover">
-    Poista sahaus/muokkauslistasta työ, jonka jonotusnumero on: <br>
+    Merkkaa valmiiksi tai poista sahaus/muokkauslistasta työ, jonka jonotusnumero on: <br>
     <input id= "deleterChoose" name= "deleterChoose" type= "radio" value= "sahaus"><label for= "deleterChoose">sahaus</label>
     <input id= "deleterChoose2" name= "deleterChoose" type= "radio" value= "muokkaus"><label for= "deleterChoose2">muokkaus</label>
     <input type= "text" id= "deleterNumber" size= "3">
@@ -46,7 +47,9 @@
       <p id= "sahaQueue"></p>
       <p id= "muokkausQueue"></p>  
     </div>
-    
-    
-  </body>
+    <p id= "colorRed">
+    Viimeisimmät valmiit/poistetut: <br>
+     <div id= "deletedQueue"></div>
+    </p>
+    </body>
 </html>
