@@ -42,6 +42,8 @@ function deleteMSG(){
 function deleteEntry() {
   
   const deleterN = document.getElementById('deleterNumber');
+  const onlySahaus = /sahaus./;
+  const both = /sahaus ja muokkaus/;
   let selectedList;
   let newNumber;
 
@@ -64,17 +66,28 @@ function deleteEntry() {
             // if 10-99
             newNumber = parseInt(sahaList[xx][0] + sahaList[xx][1]);
           }
-          let newArray = sahaList[xx].substring(1);
+          let newArray = sahaList[xx].substring(1);  
           newArray = newNumber + newArray;
           if (newNumber == deleterN.value) {
             const forDelete = sahaList[xx].concat([]);
-            deletedList.push(forDelete);
-            sahaList.splice(xx, 1);
-            const forShow1 = sahaList.join('<br>');
-            const forShow2 = muokkausList.join('<br>');
-            const forShow3 = deletedList.join('<br>');
-            refresher(forShow1, forShow2, forShow3);
-            console.log("deletedList: ", deletedList);
+            // only sahaus: 
+            if (sahaList[xx].search('sahaus ja muokkaus') >= 0){
+              console.log("only sahaus, deleted");
+              muokkausList.push(forDelete);
+              sahaList.splice(xx, 1);
+              const forShow1 = sahaList.join('<br>');
+              const forShow2 = muokkausList.join('<br>');
+              const forShow3 = deletedList.join('<br>');
+              refresher(forShow1, forShow2, forShow3);
+            } else {
+              console.log("sahaus, deleted");
+              deletedList.push(forDelete);
+              sahaList.splice(xx, 1);
+              const forShow1 = sahaList.join('<br>');
+              const forShow2 = muokkausList.join('<br>');
+              const forShow3 = deletedList.join('<br>');
+              refresher(forShow1, forShow2, forShow3);
+            } 
           }
         }
       }
@@ -192,7 +205,6 @@ function addNew() {
 } // add new action ends
 
 // ONLOAD:
-
 window.onload = ()=> {
   console.log("onload!");
 };
