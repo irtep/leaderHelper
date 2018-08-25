@@ -47,3 +47,10 @@
 #info2 {
   flex: 1;
 }
+#errorMessage{
+  color: crimson;
+  font-size: 20px;
+}
+#colorRed {
+  color: darkRed;
+}

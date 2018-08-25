@@ -1,35 +1,58 @@
+// GLOBAL VARIABLES:
+
 // event listeners 
 const liztenerAdd = document.getElementById("sendNew").addEventListener("click", addNew);
 const liztenerDelete = document.getElementById("deleterButton").addEventListener("click", deleteEntry);
 // nicks
 const sahaQue = document.getElementById('sahaQueue');
 const muokkausQue = document.getElementById('muokkausQueue');
+const deletedQue = document.getElementById('deletedQueue');
+const errorMSG = document.getElementById('errorMessage');
 // arrays for lists
 const sahaList = [];
 const muokkausList = [];
+const deletedList = [];
 // here comes the old lists from dataBase
 let oldListSaha; 
 let oldListMuokkaus;
+let oldDeletedList;
+
+// FUNCTIONS:
+
+// sort selected queue
+function sortQueue(queue){
+  let newList;
+  return newList;
+}
 
 // screen refresher
-function refresher(list1, list2) {
+function refresher(list1, list2, list3) {
   // add to elements
   sahaQue.innerHTML = list1;
   muokkausQue.innerHTML = list2;
+  deletedQue.innerHTML = list3;
+}
+
+// error message deleter:
+function deleteMSG(){
+  errorMSG.innerHTML = '';
 }
 
 // entry deleter function
 function deleteEntry() {
+  
   const deleterN = document.getElementById('deleterNumber');
   let selectedList;
   let newNumber;
+
   if (isNaN(deleterN.value)){
-    console.log("is not number")
+    errorMSG.innerHTML = 'Jononumeroksi ei kelpaa kuin numero!';
+    setTimeout(deleteMSG, 5000); 
   } else {
     if (deleterN.value === ''){
-      console.log("is empty");
+      errorMSG.innerHTML = 'Jononumeroksi ei saa olla tyhjä!';
+      setTimeout(deleteMSG, 5000); 
     } else {
-      console.log("number");
       // if sahaList chosen:
       if (document.getElementById('deleterChoose').checked) {
         selectedList = 'sahaus';    
@@ -41,17 +64,17 @@ function deleteEntry() {
             // if 10-99
             newNumber = parseInt(sahaList[xx][0] + sahaList[xx][1]);
           }
-          
           let newArray = sahaList[xx].substring(1);
           newArray = newNumber + newArray;
-          // deleterNumber.value
-          console.log("newNumber, numberToDelete", newNumber, deleterN.value);
           if (newNumber == deleterN.value) {
-            console.log("same value, deleting");    
+            const forDelete = sahaList[xx].concat([]);
+            deletedList.push(forDelete);
             sahaList.splice(xx, 1);
             const forShow1 = sahaList.join('<br>');
             const forShow2 = muokkausList.join('<br>');
-            refresher(forShow1, forShow2);
+            const forShow3 = deletedList.join('<br>');
+            refresher(forShow1, forShow2, forShow3);
+            console.log("deletedList: ", deletedList);
           }
         }
       }
@@ -72,17 +95,19 @@ function deleteEntry() {
           // deleterNumber.value
           console.log("newNumber, numberToDelete", newNumber, deleterN.value);
           if (newNumber == deleterN.value) {
-            console.log("same value, deleting");    
+            const forDelete = muokkausList[xx].concat([]);
+            deletedList.push(forDelete);    
             muokkausList.splice(xx, 1);
             const forShow1 = sahaList.join('<br>');
             const forShow2 = muokkausList.join('<br>');
-            refresher(sahaList, muokkausList);
+            const forShow3 = deletedList.join('<br>');
+            refresher(forShow1, forShow2, forShow3);
           }
         }        
       } // muokkauslist delete ends
     }
   }  
-}
+} // deletelist function ends
 
 // add new job function
 function addNew() {
@@ -130,17 +155,21 @@ function addNew() {
       case 'sahaus ja muokkaus':
         sahaList.push(forAdd);
       break;  
-      default: console.log('cant find newWork.jobs value!');  
+      default: 
+        console.log('cant find newWork.jobs value!');
+        errorMSG.innerHTML = 'Valitse joko sahaus, muokkaus tai sahaus ja muokkaus!';
+        setTimeout(deleteMSG, 5000);
     }
     // arrange list from 1 to last.
-  
+    console.log("sahaList/muokkausList", sahaList, muokkausList);  
     // if newWork.number overlaps with any number in oldList, modificate oldList to make space
     // can use this for that:
 
     const forShow1 = sahaList.join('<br>');
     const forShow2 = muokkausList.join('<br>');
+    const forShow3 = deletedList.join('<br>');
     // add to elements
-    refresher(forShow1, forShow2);
+    refresher(forShow1, forShow2, forShow3);
     //sahaQue.innerHTML = forShow1;
     //muokkausQue.innerHTML = forShow2;
     // clear values from form
@@ -154,15 +183,20 @@ function addNew() {
 
     // save to database.  
     
-  } else { console.log("empty fields or not numbers");} 
+  } else { 
+    console.log("empty fields or not numbers");
+    errorMSG.innerHTML = 'Työnumero ja/tai jononumero ei saa olla tyhjä, eikä siellä voi olla kirjaimia myöskään!';
+    setTimeout(deleteMSG, 5000);  
+  } 
 
 } // add new action ends
 
-// Onload:
+// ONLOAD:
+
 window.onload = ()=> {
   console.log("onload!");
 };
 /*
 Ajax to get current work list and add it to workQue.innerHTML
-and also to oldListSaha and OldListMuokkaus
+and also to oldListSaha and OldListMuokkaus and oldDeletedList
 */
