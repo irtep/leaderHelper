@@ -9,8 +9,8 @@ const muokkausQue = document.getElementById('muokkausQueue');
 const deletedQue = document.getElementById('deletedQueue');
 const errorMSG = document.getElementById('errorMessage');
 // arrays for lists
-const sahaList = [];
-const muokkausList = [];
+let sahaList = [];
+let muokkausList = [];
 const deletedList = [];
 // here comes the old lists from dataBase
 let oldListSaha; 
@@ -19,10 +19,73 @@ let oldDeletedList;
 
 // FUNCTIONS:
 
-// sort selected queue
-function sortQueue(queue){
-  let newList;
-  return newList;
+// set first of list as 1 and rest to follow:
+function numberEqualizer(queue){
+  for (let i = 0; i < queue.length; i++){
+    let newNumber = i + 1;
+    let newElement;
+    if (queue[i][1] == '.'){
+      newElement = queue[i].substring(1);
+    } else {
+      newElement = queue[i].substring(2);
+    }
+    newElement = newNumber + newElement;
+    queue[i] = newElement;
+  }
+  return queue;
+}
+
+// sort double digit numbers:
+function doubleDigsSort(queue){
+// This needs fix as it sets double digits to end but doesnt order them
+// maybe something like that it takes all double digits, sets them there and orders them before return
+  for (let index = 0; index < queue.length; index++){
+    if (queue[index][1] != '.'){
+      queue.push(queue.splice(index, 1)[0]);    
+    }
+  }  
+  return queue;
+}
+
+// to avoid dublicated values:
+function fixDublicates(queue, qNumber){
+  
+  const stringed = qNumber.toString();
+  const forCompare = stringed + ".";
+  let newElement;
+  
+  for (let i= 0; i < queue.length; i++){
+    if (queue[i][0] == forCompare[0] && queue[i][1] == forCompare[1]) {
+      
+      let newNumber;
+      let oneDigit = true;
+      
+      for (let xx = i; xx < queue.length; xx++){
+        // if 0-9
+        if (queue[xx][1] === '.'){
+          newNumber = parseInt(queue[xx][0]);
+          newNumber++;
+        } else { 
+          // if 10-99
+          newNumber = parseInt(queue[xx][0] + queue[xx][1]);
+          newNumber++;
+          oneDigit = false;
+        }
+        if (oneDigit === true) {
+          newElement = queue[xx].substring(1); 
+          newElement = newNumber + newElement; 
+        } else {
+          newElement = queue[xx].substring(2);   
+          newElement = newNumber + newElement; 
+          newElement = newElement.toString(); 
+          oneDigit = true; // reset
+        }
+        // replace with updated number:
+        queue[xx] = newElement;
+      }
+    }    
+  }
+  return queue;
 }
 
 // screen refresher
@@ -39,6 +102,8 @@ function deleteMSG(){
 }
 
 // entry deleter function
+// Maybe should add something that after delete others that are left
+// get -1 so that all looks nice
 function deleteEntry() {
   
   const deleterN = document.getElementById('deleterNumber');
@@ -52,7 +117,7 @@ function deleteEntry() {
     setTimeout(deleteMSG, 5000); 
   } else {
     if (deleterN.value === ''){
-      errorMSG.innerHTML = 'Jononumeroksi ei saa olla tyhjä!';
+      errorMSG.innerHTML = 'Jononumeroruutu ei saa olla tyhjä!';
       setTimeout(deleteMSG, 5000); 
     } else {
       // if sahaList chosen:
@@ -70,19 +135,25 @@ function deleteEntry() {
           newArray = newNumber + newArray;
           if (newNumber == deleterN.value) {
             const forDelete = sahaList[xx].concat([]);
-            // only sahaus: 
+            // sahaus and muokkaus: 
             if (sahaList[xx].search('sahaus ja muokkaus') >= 0){
-              console.log("only sahaus, deleted");
+              const numberGrab = forDelete[0] + forDelete[1]
+              fixDublicates(muokkausList, numberGrab);
+              muokkausList.sort();
               muokkausList.push(forDelete);
+              muokkausList.sort();
+              doubleDigsSort(muokkausList);
               sahaList.splice(xx, 1);
+              numberEqualizer(sahaList);
+              numberEqualizer(muokkausList);
               const forShow1 = sahaList.join('<br>');
               const forShow2 = muokkausList.join('<br>');
               const forShow3 = deletedList.join('<br>');
               refresher(forShow1, forShow2, forShow3);
-            } else {
-              console.log("sahaus, deleted");
+            } else { // sahaus:
               deletedList.push(forDelete);
               sahaList.splice(xx, 1);
+              numberEqualizer(sahaList);
               const forShow1 = sahaList.join('<br>');
               const forShow2 = muokkausList.join('<br>');
               const forShow3 = deletedList.join('<br>');
@@ -105,12 +176,11 @@ function deleteEntry() {
           
           let newArray = muokkausList[xx].substring(1);
           newArray = newNumber + newArray;
-          // deleterNumber.value
-          console.log("newNumber, numberToDelete", newNumber, deleterN.value);
           if (newNumber == deleterN.value) {
             const forDelete = muokkausList[xx].concat([]);
             deletedList.push(forDelete);    
             muokkausList.splice(xx, 1);
+            numberEqualizer(muokkausList);
             const forShow1 = sahaList.join('<br>');
             const forShow2 = muokkausList.join('<br>');
             const forShow3 = deletedList.join('<br>');
@@ -146,8 +216,7 @@ function addNew() {
   // if number and queue are numbers and not empty we continue:
   if (newWork.number > 0 && isNaN(newWork.number) === false &&
       newWork.queue > 0 && isNaN(newWork.queue) === false ) {
-    
-    // also check that all are in order and without empty spaces and fix if needed.
+
     if (newWork.jobs === null) {
       newWork.jobs = 'ei määritelty';
     }
@@ -160,23 +229,43 @@ function addNew() {
     // push to relevant list
     switch (newWork.jobs){
       case 'sahaus':
+        sahaList.sort();
+        doubleDigsSort(sahaList);
+        sahaList = fixDublicates(sahaList, newWork.queue);
+        sahaList.sort();
+        doubleDigsSort(sahaList);
         sahaList.push(forAdd);
+        sahaList.sort();
+        doubleDigsSort(sahaList);
+        numberEqualizer(sahaList);
       break;
       case 'muokkaus':
+        muokkausList.sort();
+        doubleDigsSort(muokkausList);
+        muokkausList = fixDublicates(muokkausList, newWork.queue);
+        muokkausList.sort();
+        doubleDigsSort(muokkausList);
         muokkausList.push(forAdd);
+        muokkausList.sort();
+        doubleDigsSort(muokkausList);
+        numberEqualizer(muokkausList);
       break;
       case 'sahaus ja muokkaus':
+        sahaList.sort();
+        doubleDigsSort(sahaList);
+        sahaList = fixDublicates(sahaList, newWork.queue);
+        sahaList.sort();
+        doubleDigsSort(sahaList);
         sahaList.push(forAdd);
+        sahaList.sort();
+        doubleDigsSort(sahaList);
+        numberEqualizer(sahaList);
       break;  
       default: 
-        console.log('cant find newWork.jobs value!');
         errorMSG.innerHTML = 'Valitse joko sahaus, muokkaus tai sahaus ja muokkaus!';
         setTimeout(deleteMSG, 5000);
     }
     // arrange list from 1 to last.
-    console.log("sahaList/muokkausList", sahaList, muokkausList);  
-    // if newWork.number overlaps with any number in oldList, modificate oldList to make space
-    // can use this for that:
 
     const forShow1 = sahaList.join('<br>');
     const forShow2 = muokkausList.join('<br>');
@@ -197,7 +286,6 @@ function addNew() {
     // save to database.  
     
   } else { 
-    console.log("empty fields or not numbers");
     errorMSG.innerHTML = 'Työnumero ja/tai jononumero ei saa olla tyhjä, eikä siellä voi olla kirjaimia myöskään!';
     setTimeout(deleteMSG, 5000);  
   } 
@@ -207,8 +295,22 @@ function addNew() {
 // ONLOAD:
 window.onload = ()=> {
   console.log("onload!");
+  /*
+  Ajax to get current work list and add it to workQue.innerHTML
+  and also to oldListSaha and OldListMuokkaus and oldDeletedList
+  */
+  const http = new XMLHttpRequest();
+  const url = '/showAll';
+  const params = 'MSG=Cool';
+  http.open('POST', url, true);
+
+  //Send the proper header information along with the request
+  http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+  http.onreadystatechange = () => {//Call a function when the state changes.
+    if(http.readyState == 4 && http.status == 200) {
+      console.log(http.responseText);
+    }
+  }
+  http.send(params);
 };
-/*
-Ajax to get current work list and add it to workQue.innerHTML
-and also to oldListSaha and OldListMuokkaus and oldDeletedList
-*/
