@@ -1,4 +1,5 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 // database access:
 const mongoose = require('mongoose'); 
@@ -11,13 +12,20 @@ const Schema = mongoose.Schema;
 
 app.use(express.static('public'));
 
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
+
 // GET handler.
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 // POST handler:
 app.post('/showAll', (request, response) => {
-  console.log('Post with showAll received');
+  const received = request.body;
+  console.log('Post with showAll received: ', received);
+  //console.log(request.headers);
+  response.writeHead(200, {'Content-Type': 'text/plain'});
+  response.end('send ok');
 });
 
 const listener = app.listen(process.env.PORT, function() {
