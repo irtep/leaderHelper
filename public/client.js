@@ -11,7 +11,7 @@ const errorMSG = document.getElementById('errorMessage');
 // arrays for lists
 let sahaList = [];
 let muokkausList = [];
-const deletedList = [];
+let deletedList = [];
 // here comes the old lists from dataBase
 let oldListSaha; 
 let oldListMuokkaus;
@@ -37,8 +37,6 @@ function numberEqualizer(queue){
 
 // sort double digit numbers:
 function doubleDigsSort(queue){
-// This needs fix as it sets double digits to end but doesnt order them
-// maybe something like that it takes all double digits, sets them there and orders them before return
   for (let index = 0; index < queue.length; index++){
     if (queue[index][1] != '.'){
       queue.push(queue.splice(index, 1)[0]);    
@@ -101,7 +99,7 @@ function deleteMSG(){
   errorMSG.innerHTML = '';
 }
 
-// entry deleter function
+// ------------------- entry deleter function ----------------------
 // Maybe should add something that after delete others that are left
 // get -1 so that all looks nice
 function deleteEntry() {
@@ -190,6 +188,7 @@ function deleteEntry() {
       } // muokkauslist delete ends
     }
   }  
+  updateListsInDB();
 } // deletelist function ends
 
 // add new job function
@@ -289,22 +288,53 @@ function addNew() {
     errorMSG.innerHTML = 'Työnumero ja/tai jononumero ei saa olla tyhjä, eikä siellä voi olla kirjaimia myöskään!';
     setTimeout(deleteMSG, 5000);  
   } 
-
+  updateListsInDB();
 } // add new action ends
 
-// ONLOAD:
-window.onload = ()=> {
-  console.log("onload!");
-  /*
-  Ajax to get current work list and add it to workQue.innerHTML
-  and also to oldListSaha and OldListMuokkaus and oldDeletedList
-  */
+// ---- Ajax request functions: ----------
+
+// update all from database:
+function updateListsFromDB(){
+  
+  const allLists = JSON.stringify({saha: sahaList, muokkaus: muokkausList, deleted: deletedList});
   const http = new XMLHttpRequest();
   const url = '/showAll';
-  const params = 'MSG=Cool';
+  const params = 'MSG=show';
+  // const params = 'MSG=' + allList;
+  // console.log("params, allLists: ", params, allLists);
+  
   http.open('POST', url, true);
+  http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
-  //Send the proper header information along with the request
+  http.onreadystatechange = () => {//Call a function when the state changes.
+    if(http.readyState == 4 && http.status == 200) {
+      const newLists = JSON.parse(http.responseText);
+      console.log(newLists);
+      console.log("sahalist: ", newLists[0][0].sahaList);
+      console.log("mlist: ", newLists[1][0].muokkausList);
+      console.log("dlist: ", newLists[2][0].deletedList);
+      sahaList = newLists[0][0].sahaList;
+      muokkausList = newLists[1][0].muokkausList;
+      deletedList = newLists[2][0].deletedList;
+      const forShow1 = sahaList.join('<br>');
+      const forShow2 = muokkausList.join('<br>');
+      const forShow3 = deletedList.join('<br>');
+      refresher(forShow1, forShow2, forShow3)
+    }
+  }
+  http.send(params);
+  // update lists here
+}
+// update lists of database:
+function updateListsInDB(){
+  
+  const allLists = JSON.stringify({saha: sahaList, muokkaus: muokkausList, deleted: deletedList});
+  const http = new XMLHttpRequest();
+  const url = '/updateAll';
+  const params = 'MSG=' + allLists;
+  // console.log("params, allLists: ", params, allLists);
+  
+  http.open('POST', url, true);
   http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 
   http.onreadystatechange = () => {//Call a function when the state changes.
@@ -313,4 +343,13 @@ window.onload = ()=> {
     }
   }
   http.send(params);
+}
+
+// ONLOAD:
+window.onload = ()=> {
+  console.log("onload!");  
+  updateListsFromDB();
+  if (deletedList.length < 10) {
+    deletedList.splice(10, 1);
+  }
 };
