@@ -1,26 +1,29 @@
+// To do: Test what happens, if any of lists are empty.
+
 // GLOBAL VARIABLES:
 
 // event listeners 
 const liztenerAdd = document.getElementById("sendNew").addEventListener("click", addNew);
 const liztenerDelete = document.getElementById("deleterButton").addEventListener("click", deleteEntry);
+// add one for so that when ticks changes in jobs, then updates DB:s.
+// add one for "refresher button".
+
 // nicks
 const sahaQue = document.getElementById('sahaQueue');
 const muokkausQue = document.getElementById('muokkausQueue');
 const deletedQue = document.getElementById('deletedQueue');
 const errorMSG = document.getElementById('errorMessage');
+
 // arrays for lists
 let sahaList = [];
 let muokkausList = [];
 let deletedList = [];
-// here comes the old lists from dataBase
-let oldListSaha; 
-let oldListMuokkaus;
-let oldDeletedList;
 
 // FUNCTIONS:
 
 // set first of list as 1 and rest to follow:
 function numberEqualizer(queue){
+  
   for (let i = 0; i < queue.length; i++){
     let newNumber = i + 1;
     let newElement;
@@ -37,6 +40,7 @@ function numberEqualizer(queue){
 
 // sort double digit numbers:
 function doubleDigsSort(queue){
+  
   for (let index = 0; index < queue.length; index++){
     if (queue[index][1] != '.'){
       queue.push(queue.splice(index, 1)[0]);    
@@ -88,6 +92,7 @@ function fixDublicates(queue, qNumber){
 
 // screen refresher
 function refresher(list1, list2, list3) {
+  
   // add to elements
   sahaQue.innerHTML = list1;
   muokkausQue.innerHTML = list2;
@@ -96,12 +101,11 @@ function refresher(list1, list2, list3) {
 
 // error message deleter:
 function deleteMSG(){
+  
   errorMSG.innerHTML = '';
 }
 
 // ------------------- entry deleter function ----------------------
-// Maybe should add something that after delete others that are left
-// get -1 so that all looks nice
 function deleteEntry() {
   
   const deleterN = document.getElementById('deleterNumber');
@@ -193,7 +197,7 @@ function deleteEntry() {
 
 // add new job function
 function addNew() {
-  console.log('addNew fired');
+  
   const newWork = {number: null, queue: null, jobs: null, whoAdded: null, extraNotes: null};
   
   // get values:
@@ -271,18 +275,14 @@ function addNew() {
     const forShow3 = deletedList.join('<br>');
     // add to elements
     refresher(forShow1, forShow2, forShow3);
-    //sahaQue.innerHTML = forShow1;
-    //muokkausQue.innerHTML = forShow2;
-    // clear values from form
+    // clear values from form (not clearing leaders name, as prolly its same for next) 
     document.getElementById('workNumber').value = '';
     document.getElementById('queueNumber').value = '';
     document.getElementById('extraNotes').value = '';
     document.getElementById('workNumber').value = '';
     document.getElementById('choise1').checked = false;
     document.getElementById('choise2').checked = false;
-    document.getElementById('choise3').checked = false;
-
-    // save to database.  
+    document.getElementById('choise3').checked = false; 
     
   } else { 
     errorMSG.innerHTML = 'Työnumero ja/tai jononumero ei saa olla tyhjä, eikä siellä voi olla kirjaimia myöskään!';
@@ -300,8 +300,6 @@ function updateListsFromDB(){
   const http = new XMLHttpRequest();
   const url = '/showAll';
   const params = 'MSG=show';
-  // const params = 'MSG=' + allList;
-  // console.log("params, allLists: ", params, allLists);
   
   http.open('POST', url, true);
   http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -332,7 +330,6 @@ function updateListsInDB(){
   const http = new XMLHttpRequest();
   const url = '/updateAll';
   const params = 'MSG=' + allLists;
-  // console.log("params, allLists: ", params, allLists);
   
   http.open('POST', url, true);
   http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -345,8 +342,9 @@ function updateListsInDB(){
   http.send(params);
 }
 
-// ONLOAD:
+//  -------- ONLOAD:  ------------
 window.onload = ()=> {
+  
   console.log("onload!");  
   updateListsFromDB();
   if (deletedList.length < 10) {
