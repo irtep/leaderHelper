@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const pasw = process.env.SECRET2;
 // database access:
 const mongoose = require('mongoose'); 
 const mongoDB = process.env.SECRET1; // admin
@@ -34,8 +35,11 @@ app.use(express.static('public'));
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
-// GET handler.
+// GET handlers.
 app.get('/', function(request, response) {
+  response.sendFile(__dirname + '/views/index2.html');
+});
+app.get('/index3', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
 
@@ -79,6 +83,14 @@ app.post('/showAll', (request, response) => {
   
   //console.log(request.headers);
 
+});
+
+app.post('/checkPW', (request, response) =>{
+  console.log("login attempt");
+  if (request.body.MSG == pasw) {
+    response.writeHead(200, {'Content-Type': 'text/plain'});
+    response.end('ok');
+  }
 });
 
 app.post('/updateAll', (request, response) => {

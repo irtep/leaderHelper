@@ -1,13 +1,20 @@
-// To do: Test what happens, if any of lists are empty.
+// To do: Test what happens, if any of lists are empty. Or code in advance something to avoid problems with that.
 
 // GLOBAL VARIABLES:
 
 // event listeners 
 const liztenerAdd = document.getElementById("sendNew").addEventListener("click", addNew);
 const liztenerDelete = document.getElementById("deleterButton").addEventListener("click", deleteEntry);
-// add one for so that when ticks changes in jobs, then updates DB:s.
-// add one for "refresher button".
+const liztenerReload = document.getElementById("reloadButton").addEventListener("click", updateListsFromDB);
 
+// listener for radioButtons to get some auto-updates
+const radios=document.querySelectorAll("input[type=radio]");
+
+for(let xi = 0; xi < radios.length; xi++) {
+  radios[xi].addEventListener("change",() =>{
+    updateListsFromDB();
+  });
+}
 // nicks
 const sahaQue = document.getElementById('sahaQueue');
 const muokkausQue = document.getElementById('muokkausQueue');
@@ -300,6 +307,7 @@ function updateListsFromDB(){
   const http = new XMLHttpRequest();
   const url = '/showAll';
   const params = 'MSG=show';
+  console.log("updating from DB");
   
   http.open('POST', url, true);
   http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
@@ -307,17 +315,14 @@ function updateListsFromDB(){
   http.onreadystatechange = () => {//Call a function when the state changes.
     if(http.readyState == 4 && http.status == 200) {
       const newLists = JSON.parse(http.responseText);
-      console.log(newLists);
-      console.log("sahalist: ", newLists[0][0].sahaList);
-      console.log("mlist: ", newLists[1][0].muokkausList);
-      console.log("dlist: ", newLists[2][0].deletedList);
       sahaList = newLists[0][0].sahaList;
       muokkausList = newLists[1][0].muokkausList;
       deletedList = newLists[2][0].deletedList;
       const forShow1 = sahaList.join('<br>');
       const forShow2 = muokkausList.join('<br>');
       const forShow3 = deletedList.join('<br>');
-      refresher(forShow1, forShow2, forShow3)
+      refresher(forShow1, forShow2, forShow3);
+      console.log("update ready!");
     }
   }
   http.send(params);
