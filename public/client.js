@@ -160,7 +160,7 @@ function deleteEntry() {
               const forShow3 = deletedList.join('<br>');
               refresher(forShow1, forShow2, forShow3);
             } else { // sahaus:
-              deletedList.push(forDelete);
+              deletedList.unshift(forDelete);
               sahaList.splice(xx, 1);
               numberEqualizer(sahaList);
               const forShow1 = sahaList.join('<br>');
@@ -187,7 +187,7 @@ function deleteEntry() {
           newArray = newNumber + newArray;
           if (newNumber == deleterN.value) {
             const forDelete = muokkausList[xx].concat([]);
-            deletedList.push(forDelete);    
+            deletedList.unshift(forDelete);    
             muokkausList.splice(xx, 1);
             numberEqualizer(muokkausList);
             const forShow1 = sahaList.join('<br>');
